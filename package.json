@@ -1,0 +1,24 @@
+{
+  "name": "12-employee-tracker-cli",
+  "version": "1.0.0",
+  "description": "This is a repo created for the 12th challenge from the EdX bootcamp",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexTrejo92/12-Employee-Tracker-CLI.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlexTrejo92/12-Employee-Tracker-CLI/issues"
+  },
+  "homepage": "https://github.com/AlexTrejo92/12-Employee-Tracker-CLI#readme",
+  "dependencies": {
+    "inquirer": "^8.2.4",
+    "mysql2": "^3.3.3"
+  }
+}
