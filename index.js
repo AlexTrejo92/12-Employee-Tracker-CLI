@@ -1,5 +1,9 @@
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
+// Require the librarie to insert a logo to the terminal asciiart
+const logo = require('asciiart-logo');
+const config = require('./package.json');
+
 
 const questions = [
     {
@@ -14,10 +18,12 @@ const questions = [
 ];
 
 function init() {
+    console.log(logo(config).render());
     inquirer.prompt(questions).then((response) => {
         console.log(response.firstPrompt)
         if (response.firstPrompt === 'View All Employees') {
             console.log('This will show all employees in organization');
+            console.table()
             // TODO: code to pull data from database of employees
         }
         else if (response.firstPrompt === 'Add Employee') {
@@ -32,9 +38,26 @@ function init() {
     })
 }
 
+
+// connection to mysql database
+const db = mysql.createConnection(
+    {
+    host: 'localhost',
+    user: 'root',
+    password: 'C1a9t9v2#/k2',
+    database: 'movies_db'
+    },
+    console.log('Connected to the employees_db database')
+    )
+
+
+
+
 init();
 
 
 // function testingF(response) {console.log(response.firstPrompt)};
 
 // testingF();
+
+
