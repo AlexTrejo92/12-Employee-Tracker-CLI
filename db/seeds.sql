@@ -8,3 +8,15 @@ VALUES  ('Sales'),
         ('Engineering'),
         ('Finance'),
         ('Legal');
+
+INSERT INTO roles (roles)
+VALUES  ('Salesman'),
+        ('Software Engineer'),
+        ('Project Manager'),
+        ('Product Manager');
+
+INSERT INTO managers (manager)
+VALUES  ('Joan Rivers'),
+        ('Pep Guardiola'),
+        ('Theodore Lasso'),
+        ('Joe Perry');
