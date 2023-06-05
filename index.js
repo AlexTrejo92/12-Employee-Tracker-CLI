@@ -14,31 +14,32 @@ const db = mysql.createConnection(
     },
     )
 
-const databaseInfo = db.query('SELECT * FROM employees', (err, DBresults) => {
-return DBresults;
-})
-
-console.log(databaseInfo);
 // Array that will be used in inquirer to trigger the list of options the user will be able to select.
 const questions = [
     {
         type: 'list',
         message: 'What would you like to do?',
-        /*default() {
-            return 'Use arrow keys'
-        },*/
         name: 'userSelection',
-        choices: ['View All Employees', 'Add Employee', 'Update an Employee Role', 'View All Roles', 'Add Role', 'View All Departments','Add Department','Quit']
+        choices: [  'View All Employees',
+                    'Add Employee',
+                    'Update an Employee Role',
+                    'View All Roles',
+                    'Add Role',
+                    'View All Departments',
+                    'Add Department',
+                    'Quit'
+                ]
     }
 ];
 // Code to print the Header with AsciiArt
 const printLogo = () => console.log(logo(config).render());
 printLogo();
 
-// This function adds a new employee to the employees_db
+// TODO: MAKE THIS WORK!!!! This function adds a new employee to the employees_db
 function addEmployee() {
     //Inquirer gathers the data from the user for the new employee
-    inquirer.prompt(
+    console.log('this will add a new employee');
+    /*inquirer.prompt(
         [
             {
                 type: 'input',
@@ -88,23 +89,62 @@ function addEmployee() {
                     ('${response.newEmployeeManager}');
                 `);
         console.log('Added ' + response.newEmployeeFN + '  ' + response.newEmployeeLN + ' to the database')
+    })*/
+    init();
+}
+
+function showEmployees() {
+    db.query('SELECT * FROM employees JOIN roles ON employees.employee_roleID = roles.id JOIN departments ON roles.department_id = departments.id;', function (err, results) {
+        console.log("\n");
+        console.table(results);
+        console.log("\n\n\n\n\n\n\n\n\n\n\n\n");
     })
+    init();
 }
 
 function showDepartments() {
     db.query('SELECT * FROM departments', function (err, results) {
-        console.log("\n");
+        console.log("\n\n\n\n\n");
         console.table(results);
-        console.log("\n\n\n\n\n\n\n\n\n\n\n\n");
-    })
+        console.log("\n\n\n\n\n\n");
+    });
+    init();
 }
 
 function showRoles() {
-    db.query('SELECT * FROM roles', function (err, results) {
+    db.query('SELECT * FROM roles JOIN departments ON roles.department_id = departments.id;', function (err, results) {
+        console.log(err);
         console.log("\n");
         console.table(results);
-        console.log("\n\n\n\n\n\n\n\n\n\n\n\n");
-    })
+        console.log("\n\n\n\n\n");
+    });
+    init();
+}
+
+function addRole() {
+    console.log('This will add a new role to database');
+    init();
+}
+
+function updateEmployee() {
+    console.log('Update Employee info');
+    init();
+}
+
+function addDepartment() {
+    console.log('this will add a new department to database');
+    inquirer.prompt([
+        {
+            name: 'newDepartment',
+            type: 'input',
+            message: 'What department would you like to add?'
+        }
+    ]).then((response)=>{
+        console.log(response.newDepartment);
+        db.query(`INSERT INTO departments (department) VALUES (${response.newDepartment});`)
+        console.log('New Department added!');
+        });
+    init();
 }
 
 function init() {
@@ -116,23 +156,31 @@ function init() {
 
             case 'View All Employees':
                 console.log('This will show all employees in organization');
-                db.query('SELECT * FROM employees', function (err, results) {
-                    console.log("\n");
-                    console.table(results);
-                    console.log("\n\n\n\n\n\n\n\n\n\n\n\n");
-                })
+                showEmployees();
             break;
 
             case 'View All Roles':
                 showRoles();
             break;
 
+            case 'View All Departments':
+                showDepartments();
+            break;
+
             case 'Add Employee':
                 addEmployee();
             break;
 
-            case 'View All Departments':
-                showDepartments();
+            case 'Add Role':
+                addRole();
+            break;
+
+            case 'Add Department':
+                addDepartment();
+            break;
+
+            case 'Update an Employee Role':
+                updateEmployee();
             break;
 
             case 'Quit':
@@ -167,7 +215,6 @@ function init() {
         else if (response.userSelection === 'Add Department') {console.log('this will show all departments')}
         else if (response.userSelection === 'Quit') {console.log('Goodbye! see you soon!');
         return;} */
-    init();
     }
     )
 }
