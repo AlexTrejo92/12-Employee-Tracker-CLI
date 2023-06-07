@@ -35,100 +35,130 @@ const questions = [
 const printLogo = () => console.log(logo(config).render());
 printLogo();
 
-// TODO: MAKE THIS WORK!!!! This function adds a new employee to the employees_db
-function addEmployee() {
+// TODO: Fix functionality of this. This function adds a new employee to the employees_db
+async function addEmployee() {
     //Inquirer gathers the data from the user for the new employee
     console.log('this will add a new employee');
-    /*inquirer.prompt(
-        [
-            {
-                type: 'input',
-                message: 'What is the first name of the employee?',
-                name: 'newEmployeeFN',
-            },
-            {
-                type: 'input',
-                message: 'What is the last name of the employee?',
-                name: 'newEmployeeLN',
-            },
-            {
-                type: 'list',
-                message: 'What is the employee\'s role?',
-                name: 'newEmployeeRole',
-                //TODO: Figure out how to pull info from the DATABASE so I can use the existing roles and display them as choices.
-                choices: ['1st role','2nd role'],
-            },
-            {
-                type: 'list',
-                message: 'Employee\'s department?',
-                //TODO: Figure out how to pull info from the DATABASE so I can use the existing departments as choices.
-                name: 'newEmployeeDepartment',
-                choices: ['Sales', 'Engineering', 'Finance', 'Legal']
-            },
-            {
-                type: 'input',
-                message: 'What is the employee\'s salary?',
-                name: 'newEmployeeSalary',
-            },
-            {
-                type: 'list',
-                message: 'Who is the employee\'s manager?',
-                name: 'newEmployeeManager',
-                choices: ['1st','2nd'],
-            }
-        ]
-    ).then((response) => {
-        console.log(response);
-        db.query(
-            `INSERT INTO employees (employee_firstName, employee_lastName, employee_role, employee_department, salary, employee_manager)
-            VALUES  ('${response.newEmployeeFN}'),
-                    ('${response.newEmployeeLN}'),
-                    ('${response.newEmployeeRole}'),
-                    ('${response.newEmployeeDepartment}'),
-                    ('${response.newEmployeeSalary}'),
-                    ('${response.newEmployeeManager}');
-                `);
-        console.log('Added ' + response.newEmployeeFN + '  ' + response.newEmployeeLN + ' to the database')
-    })*/
-    init();
+    try {
+        // we store in a variable the information from the database, so that we can later use it in inquirer as choices
+        const [departments] = await db.promise().query('Select * from departments');
+        const [roles] = await db.promise().query('SELECT * FROM roles');
+        const [employees] = await db.promise().query('SELECT * FROM employees');
+        // Console logs used to confirm the data from db was pulled correctly
+        //console.log(departments);
+        //console.log(roles);
+        //console.log(employees);
+        const answersAdd = await inquirer.prompt(
+            [
+                {
+                    type: 'input',
+                    message: 'What is the first name of the employee?',
+                    name: 'newEmployeeFN',
+                },
+                {
+                    type: 'input',
+                    message: 'What is the last name of the employee?',
+                    name: 'newEmployeeLN',
+                },
+                {
+                    type: 'list',
+                    message: 'What is the employee\'s role?',
+                    name: 'newEmployeeRole',
+                    //we use the .map method so that we can look into the roles table and choose a specific row and its id
+                    choices: roles.map((role)=>{
+                        return { 
+                            name: role.job_title, 
+                            value: role.id
+                        }
+                    }),
+                },
+                {
+                    type: 'list',
+                    message: 'Employee\'s department?',
+                    name: 'newEmployeeDepartment',
+                    choices: departments.map((dp)=>{
+                        return { 
+                            name: dp.department, 
+                            value: dp.id
+                        }
+                    }),
+                },
+                {
+                    type: 'input',
+                    message: 'What is the employee\'s salary?',
+                    name: 'newEmployeeSalary',
+                },
+                {
+                    type: 'list',
+                    message: 'Who is the employee\'s manager?',
+                    name: 'newEmployeeManager',
+                    choices: employees.map((empl)=>{
+                        return{
+                            name: empl.employee_firstName+empl.employee_lastName,
+                            value: empl.id
+                        }
+                    }),
+                }
+            ]
+            );
+        console.log(answersAdd);
+        //make promise
+        //db.query('INSERT INTO employees (employee_firstName, employee_lastName, employee_roleID, employee_managerID) VALUES  (?,?,?,?) INSERT INTO roles (job_title, salary, department_id)',[answersAdd.newEmployeeFN, answersAdd.newEmployeeLN,])
+        showQuestions();
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 function showEmployees() {
-    db.query('SELECT * FROM employees JOIN roles ON employees.employee_roleID = roles.id JOIN departments ON roles.department_id = departments.id;', function (err, results) {
-        console.log("\n");
-        console.table(results);
-        console.log("\n\n\n\n\n\n\n\n\n\n\n\n");
-    })
-    init();
+    return db.promise().query('SELECT * FROM employees JOIN roles ON employees.employee_roleID = roles.id JOIN departments ON roles.department_id = departments.id;')
 }
 
 function showDepartments() {
     db.query('SELECT * FROM departments', function (err, results) {
-        console.log("\n\n\n\n\n");
         console.table(results);
-        console.log("\n\n\n\n\n\n");
+        showQuestions();
     });
-    init();
+    
 }
 
 function showRoles() {
     db.query('SELECT * FROM roles JOIN departments ON roles.department_id = departments.id;', function (err, results) {
-        console.log(err);
-        console.log("\n");
         console.table(results);
-        console.log("\n\n\n\n\n");
+        showQuestions();
     });
-    init();
+    
 }
-
+//TODO: Finish this functionality
 function addRole() {
     console.log('This will add a new role to database');
-    init();
+        inquirer.prompt([
+        {
+            name: 'newRole',
+            type: 'input',
+            message: 'What role would you like to add?'
+        },
+        {
+            name: 'newSalary',
+            type: 'input',
+            message: 'What is the salary for this role?'
+        },
+        {
+            name: 'newDepartment',
+            type: 'input',
+            message: 'Which department will this role be in?'
+        },
+    ]).then((response)=>{
+        console.log(response);
+        //db.query('INSERT INTO roles ()')
+        showQuestions();
+    })
+    
 }
-
+// TODO: FINISH THIS functionality
 function updateEmployee() {
     console.log('Update Employee info');
-    init();
+    showQuestions();
 }
 
 function addDepartment() {
@@ -140,23 +170,27 @@ function addDepartment() {
             message: 'What department would you like to add?'
         }
     ]).then((response)=>{
-        console.log(response.newDepartment);
-        db.query(`INSERT INTO departments (department) VALUES (${response.newDepartment});`)
-        console.log('New Department added!');
-        });
-    init();
+        db.query('INSERT INTO departments (department) VALUES (?);',[response.newDepartment], function(error, results){
+            console.log('New Department added!');
+        })
+        showQuestions();
+        }).catch((error)=>{console.log(error)});
 }
 
-function init() {
+function showQuestions() {
 
     inquirer.prompt(questions).then((response) => {
         const userSelection = response.userSelection;
-
+// switch statement to use for every option from inquirer
         switch (userSelection) {
 
             case 'View All Employees':
                 console.log('This will show all employees in organization');
-                showEmployees();
+                // we use .then as we made showEmployees asynchronous
+                showEmployees().then(([rows,columns]) =>{
+                    console.table(rows)
+                    showQuestions();
+                });
             break;
 
             case 'View All Roles':
@@ -188,38 +222,11 @@ function init() {
                 process.exit()
                 return;
         }
-
-        /* Initially the functionality was written using if statements, but decided to use Switch Statements instead
-        if (userSelection === 'View All Employees') {
-            console.log('This will show all employees in organization');
-            db.query('SELECT * FROM employees', function (err, results) {
-                console.log("\n");
-                console.table(results);
-                console.log("\n\n\n\n\n\n\n\n\n\n\n\n");})
-        }
-        else if (userSelection === 'Add Employee') {
-            console.log('this will add a new employee')
-        }
-        else if (response.userSelection === 'Update Employee Role') {
-            console.log('this will update an employee role')
-        }
-        else if (response.userSelection === 'View All Roles') {console.log('this will show all roles')}
-        else if (response.userSelection === 'Add Role') {console.log('this will add a new role')}
-        else if (response.userSelection === 'View All Departments') {
-            console.log('this will show all departments');
-            db.query('SELECT * FROM departments', function (err, results) {
-                console.log("\n");
-                console.table(results);
-                console.log("\n\n\n\n\n\n\n\n\n\n\n\n");})
-        }
-        else if (response.userSelection === 'Add Department') {console.log('this will show all departments')}
-        else if (response.userSelection === 'Quit') {console.log('Goodbye! see you soon!');
-        return;} */
     }
     )
-}
-
-init();
+};
+// This function triggers Inquirer so the user can select different options to use the app.
+showQuestions();
 
 
 
