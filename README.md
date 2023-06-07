@@ -10,7 +10,8 @@ This project is a CLI application that uses an SQL database, Javascript and Node
 ## Table of contents
 
 - [Installation](#installation)
-- [Mockup](#Mockup)
+- [Mockup](#mockup)
+- [Video](#video)
 - [Credits](#credits)
 - [License](#license)
 - [Contributing](#contributing)
@@ -24,6 +25,9 @@ Please use NPM i to install the dependencies.
 The application should look like this
 
 ![alt text](./assets/screenshotMockup.jpg)
+
+## Video
+Follow this link to a video walktrough https://drive.google.com/file/d/1rMGL38xRcqPSx-uzhK4jFeuDE8oweAQS/view?usp=drive_link
 
 ## Credits
 This CLI application acceptance criteria was provided by EdX bootcamps & Tec de Monterrey. The functionality was coded by me with support from a tutor.
